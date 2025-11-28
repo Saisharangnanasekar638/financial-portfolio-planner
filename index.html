@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Freedom Portfolio Suite — Clean Edition</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="description" content="Clean, light financial freedom planner — three modules: Freedom Planner, Existing Portfolio, Target Return. Includes OpenAI summary support." />
+  <link rel="stylesheet" href="styles.css" />
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="container">
+    <header class="topbar">
+      <div class="brand">
+        <div class="logo">₹</div>
+        <div>
+          <h1>Freedom Portfolio Suite</h1>
+          <p class="muted">Plan · Project · Compare</p>
+        </div>
+      </div>
+
+      <nav class="tabs">
+        <button class="tab active" data-page="page1">Planner</button>
+        <button class="tab" data-page="page2">Existing Growth</button>
+        <button class="tab" data-page="page3">Target Check</button>
+      </nav>
+    </header>
+
+    <main class="card">
+      <!-- PAGE 1 -->
+      <section id="page1" class="page active">
+        <h2>Module 1 — Financial Freedom Planner</h2>
+        <p class="muted">Estimate corpus and required SIP / lump-sum based on inflation, lifestyle and safe withdrawal rate.</p>
+
+        <div class="grid">
+          <div class="field">
+            <label>Current Age</label>
+            <input id="currentAge" type="number" placeholder="25" />
+          </div>
+          <div class="field">
+            <label>Target Age</label>
+            <input id="targetAge" type="number" placeholder="50" />
+          </div>
+          <div class="field">
+            <label>Monthly Expense (₹)</label>
+            <input id="monthlyExpense" type="text" placeholder="30,000" />
+          </div>
+          <div class="field">
+            <label>Lifestyle Increase (%)</label>
+            <input id="lifestyleIncrease" type="number" value="50" />
+          </div>
+          <div class="field">
+            <label>Inflation (%)</label>
+            <input id="inflationRate" type="number" value="6" step="0.1" />
+          </div>
+          <div class="field">
+            <label>Safe Withdrawal Rate (%)</label>
+            <input id="swr" type="number" value="4" step="0.1" />
+          </div>
+          <div class="field">
+            <label>Existing Invested (₹)</label>
+            <input id="moneyInvested" type="text" placeholder="2,00,000" />
+          </div>
+          <div class="field">
+            <label>Max Monthly Invest (₹)</label>
+            <input id="maxMonthlyInvest" type="text" placeholder="15,000" />
+          </div>
+        </div>
+
+        <h3>Asset Allocation</h3>
+        <div class="table-wrap">
+          <table id="assetTable">
+            <thead>
+              <tr><th>Asset</th><th>Allocation %</th><th>Exp. Return %</th></tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <div class="row">
+          <button id="addAssetBtn" class="btn hollow">+ Add Asset</button>
+          <div class="spacer"></div>
+          <label class="inline"><input name="investmentType" type="radio" value="sip" checked/> SIP</label>
+          <label class="inline"><input name="investmentType" type="radio" value="lumpsum"/> Lump-sum</label>
+        </div>
+
+        <div class="row right">
+          <button id="calculateBtn" class="btn primary">Calculate</button>
+        </div>
+
+        <div id="errorMessage" class="error"></div>
+
+        <div id="resultsArea" class="results" hidden>
+          <div class="result-row">
+            <div>
+              <h4>Required Corpus</h4>
+              <div id="corpusDisplay" class="big"></div>
+              <p class="muted">Corpus = annual expense ÷ SWR</p>
+            </div>
+            <div>
+              <h4>Portfolio Return</h4>
+              <div id="portfolioReturnDisplay" class="big"></div>
+              <p class="muted">Weighted expected annual return</p>
+            </div>
+            <div>
+              <h4>Required Investment</h4>
+              <div id="requiredAmount" class="big"></div>
+              <p id="requiredNote" class="muted"></p>
+            </div>
+          </div>
+
+          <div class="charts">
+            <div class="chart-card">
+              <canvas id="allocationChart"></canvas>
+            </div>
+            <div class="chart-card">
+              <canvas id="growthChart"></canvas>
+            </div>
+          </div>
+
+          <div id="summaryBox" class="summary" hidden>
+            <h4>Planner Summary</h4>
+            <p id="summaryText" class="muted"></p>
+            <div class="ai-row">
+              <button id="aiSummarizeBtn" class="btn">Ask AI to rewrite this summary (polish)</button>
+              <div id="aiStatus" class="muted small"></div>
+            </div>
+            <div id="aiOutput" class="ai-output muted"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- PAGE 2 -->
+      <section id="page2" class="page">
+        <h2>Module 2 — Existing Portfolio Growth</h2>
+        <p class="muted">Project how your current holdings can grow.</p>
+
+        <div class="grid">
+          <div class="field">
+            <label>Years to hold</label>
+            <input id="yearsExisting" type="number" placeholder="10" />
+          </div>
+        </div>
+
+        <div class="table-wrap">
+          <table id="existingTable">
+            <thead><tr><th>Asset</th><th>Amount (₹)</th><th>Exp. Return %</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <div class="row">
+          <button id="addExistingBtn" class="btn hollow">+ Add Investment</button>
+          <div class="spacer"></div>
+          <button id="calcExistingBtn" class="btn primary">Project Growth</button>
+        </div>
+        <div id="existingError" class="error"></div>
+
+        <div id="existingResults" class="results" hidden>
+          <div class="result-row">
+            <div>
+              <h4>Total Current</h4>
+              <div id="existingCurrentTotal" class="big"></div>
+            </div>
+            <div>
+              <h4>Expected Return</h4>
+              <div id="existingRp" class="big"></div>
+            </div>
+            <div>
+              <h4>Future Value</h4>
+              <div id="existingFutureTotal" class="big"></div>
+            </div>
+          </div>
+          <div class="chart-card full">
+            <canvas id="existingBarChart"></canvas>
+          </div>
+        </div>
+      </section>
+
+      <!-- PAGE 3 -->
+      <section id="page3" class="page">
+        <h2>Module 3 — Target Return Check</h2>
+        <p class="muted">Compare portfolio expected return vs the return you want.</p>
+
+        <div class="grid">
+          <div class="field">
+            <label>Target Return (%)</label>
+            <input id="targetReturn" type="number" placeholder="12" />
+          </div>
+          <div class="field">
+            <label>Years (for example)</label>
+            <input id="yearsTarget" type="number" placeholder="10" />
+          </div>
+        </div>
+
+        <div class="table-wrap">
+          <table id="targetTable">
+            <thead><tr><th>Asset</th><th>Allocation %</th><th>Exp. Return %</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+
+        <div class="row">
+          <button id="addTargetBtn" class="btn hollow">+ Add Asset</button>
+          <div class="spacer"></div>
+          <button id="calcTargetBtn" class="btn primary">Analyze</button>
+        </div>
+
+        <div id="targetError" class="error"></div>
+
+        <div id="targetResults" class="results" hidden>
+          <div class="result-row">
+            <div>
+              <h4>Portfolio Return</h4>
+              <div id="targetRp" class="big"></div>
+            </div>
+            <div>
+              <h4>₹1 Lakh — Actual vs Target</h4>
+              <div id="targetFVs" class="big"></div>
+            </div>
+          </div>
+          <div class="chart-card full">
+            <canvas id="targetBarChart"></canvas>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="foot muted">Made for your portfolio · Not financial advice</footer>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
